@@ -2,12 +2,10 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/joho/godotenv"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -30,18 +28,9 @@ func ConnectToMongo() error {
 		Password: password,
 	})
 
-	//connection to Mongo
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
-	}
-	databases, err := client.ListDatabaseNames(context.Background(), bson.M{})
-	if err != nil {
-		fmt.Println("failed", err)
-	}
-	fmt.Println("databases")
-	for _, dbName := range databases {
-		fmt.Println(dbName)
 	}
 	MongoClient = client
 	return nil
