@@ -1,0 +1,74 @@
+definitions:
+  models.ErrorMsg:
+    properties:
+      message:
+        type: string
+    type: object
+  models.Invoice:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      gender:
+        type: string
+      lastname:
+        type: string
+      password:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /createinvoice:
+    post:
+      consumes:
+      - application/json
+      description: Create a new invoice for a specific user.
+      parameters:
+      - description: Invoice data
+        in: body
+        name: invoice
+        required: true
+        schema:
+          $ref: '#/definitions/models.Invoice'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Invoice'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorMsg'
+      summary: Create a new invoice
+      tags:
+      - invoices
+  /invoicedetails/{email}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve invoice details for a specific user using their email.
+      parameters:
+      - description: Email of the user
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Invoice'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorMsg'
+      summary: Get invoice details by email
+      tags:
+      - invoices
+swagger: "2.0"

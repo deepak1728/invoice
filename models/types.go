@@ -7,3 +7,7 @@ type Invoice struct {
 	Email     string `json:"email,omitempty", bson:"_email,omitempty"`
 	Password  string `json:"password,omitempty", bson:"password,omitempty"`
 }
+
+type ErrorMsg struct {
+	Message string `json:"message"`
+}
