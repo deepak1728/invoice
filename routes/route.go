@@ -2,6 +2,11 @@ package routes
 
 import (
 	"invoice/routehandler"
+	"net/http"
+	"os"
+	"strings"
+
+	"github.com/golang-jwt/jwt/v4"
 
 	_ "invoice/docs"
 
@@ -20,8 +25,58 @@ func CreateRouter() *gin.Engine {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	router.GET("/invoicedetails/:email", routehandler.GetInvoiceDetails)
-	router.POST("/createinvoice", routehandler.CreateInvoice)
+	router.Use(authMiddleware())
+	{
+		router.GET("/invoicedetails/:email", routehandler.GetInvoiceDetails)
+		router.POST("/createinvoice", routehandler.CreateInvoice)
+	}
 
 	return router
+}
+
+func authMiddleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		tokenString := ctx.GetHeader("Authorization")
+		if tokenString == "" {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "header missing"})
+			ctx.Abort()
+			return
+		}
+		jwtKey := os.Getenv("SECRET_KEY")
+
+		if !strings.HasPrefix(tokenString, "Bearer ") {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization header format"})
+			ctx.Abort()
+			return
+		}
+		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+
+		token, err := jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, jwt.ErrInvalidKey
+			}
+
+			return []byte(jwtKey), nil
+		})
+
+		if err != nil {
+			if err == jwt.ErrSignatureInvalid {
+				ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token signature"})
+				ctx.Abort()
+				return
+			}
+
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token "})
+			ctx.Abort()
+			return
+		}
+
+		if !token.Valid {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			ctx.Abort()
+			return
+		}
+
+		ctx.Next()
+	}
 }
