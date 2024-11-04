@@ -27,9 +27,12 @@ func GetInvoiceDetails(c *gin.Context) {
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			c.JSON(http.StatusNotFound, models.ErrorMsg{Message: fmt.Sprintf("%v", err)})
+			return
+		} else {
+			log.Error().Err(err).Send()
+			c.JSON(http.StatusInternalServerError, models.ErrorMsg{Message: fmt.Sprintf("%v", err)})
+			return
 		}
-		log.Error().Err(err).Send()
-		c.JSON(http.StatusInternalServerError, models.ErrorMsg{Message: fmt.Sprintf("%v", err)})
 	}
 	c.JSON(http.StatusOK, details)
 }

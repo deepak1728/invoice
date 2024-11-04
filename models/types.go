@@ -1,11 +1,11 @@
 package models
 
 type Invoice struct {
-	FirstName string `json:"firstname,omitempty", bson:"_firstname,omitempty"`
-	LastName  string `json:"lastname,omitempty", bson:"_lasttname,omitempty"`
-	Gender    string `json:"gender,omitempty", bson:"_gender,omitempty"`
-	Email     string `json:"email,omitempty", bson:"_email,omitempty"`
-	Password  string `json:"password,omitempty", bson:"password,omitempty"`
+	FirstName string `bson:"firstname,omitempty" json:"firstname,omitempty"`
+	LastName  string `bson:"lastname,omitempty" json:"lastname,omitempty"`
+	Gender    string `bson:"gender,omitempty" json:"gender,omitempty"`
+	Email     string `bson:"email,omitempty" json:"email,omitempty"`
+	Password  string `bson:"password,omitempty" json:"password,omitempty"`
 }
 
 type ErrorMsg struct {
