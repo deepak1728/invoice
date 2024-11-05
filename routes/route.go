@@ -27,7 +27,7 @@ func CreateRouter() *gin.Engine {
 
 	router.Use(authMiddleware())
 	{
-		router.GET("/invoicedetails/:email", routehandler.GetInvoiceDetails)
+		router.GET("/invoicedetails", routehandler.GetInvoiceDetails)
 		router.POST("/createinvoice", routehandler.CreateInvoice)
 	}
 
