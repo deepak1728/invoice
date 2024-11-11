@@ -18,7 +18,7 @@ func ConnectToMongo() error {
 		log.Fatal("Error loading .env file")
 	}
 
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	clientOptions := options.Client().ApplyURI("mongodb://mongodb:27017")
 
 	userName := os.Getenv("MONGO_DB_USERNAME")
 	password := os.Getenv("MONGO_DB_PASSWORD")

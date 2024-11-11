@@ -1,7 +1,16 @@
-version: '3'
+version: '3.8'
 
 
 services:
+  app:
+    env_file: ".env"
+    build: .
+    container_name: invoices
+    ports:
+      - "8181:8181"
+    depends_on:
+      - mongodb 
+
   mongodb:
     container_name: ${COINTAINER_NAME}
     image: "mongo:4.2.16-bionic"
@@ -11,3 +20,8 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_DB_PASSWORD}
     ports:
       - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data: {}

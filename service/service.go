@@ -3,35 +3,32 @@ package service
 import (
 	"context"
 	"invoice/db"
-	"invoice/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func GetInvoiceByEmail(email string) (models.Invoice, error) {
-	var invoice models.Invoice
-
+func GetInvoiceByEmail(ctx context.Context, filter primitive.M) ([]bson.M, error) {
 	collection := db.GetCollection("invoice")
 
-	err := collection.FindOne(context.Background(), bson.M{"email": email}).Decode(&invoice)
+	result, err := collection.Find(ctx, filter)
 	if err != nil {
-		return invoice, err
+		return nil, err
 	}
 
-	return invoice, nil
+	defer result.Close(ctx)
+	var results []bson.M
+
+	if err = result.All(ctx, &results); err != nil {
+		return nil, err
+	}
+	return results, nil
 }
 
-func AddInvoice(details *models.Invoice) error {
+func AddInvoice(ctx context.Context, details primitive.M) error {
 	collection := db.GetCollection("invoice")
 
-	_, err := collection.InsertOne(context.Background(), &models.Invoice{
-		FirstName: details.FirstName,
-		LastName:  details.LastName,
-		Gender:    details.Gender,
-		Email:     details.Email,
-		Password:  details.Password,
-	})
-
+	_, err := collection.InsertOne(ctx, details)
 	if err != nil {
 		return err
 	}
